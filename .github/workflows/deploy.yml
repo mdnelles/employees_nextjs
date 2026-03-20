@@ -1,0 +1,166 @@
+name: Deploy to Ubuntu Server
+
+on:
+   push:
+      branches:
+         - main
+         - master
+   workflow_dispatch:
+
+jobs:
+   deploy:
+      runs-on: ubuntu-latest
+
+      steps:
+         - name: Checkout code
+           uses: actions/checkout@v4
+
+         - name: Setup Node.js
+           uses: actions/setup-node@v4
+           with:
+              node-version: "24"
+              cache: "npm"
+
+         - name: Install dependencies
+           run: npm ci
+
+         - name: Build Next.js app
+           env:
+              NODE_ENV: production
+              SKIP_DB_CHECK: true
+           run: npm run build
+
+         - name: Create deployment archive
+           run: |
+              mkdir -p public
+              tar --exclude='node_modules/.cache' -czf deploy.tar.gz \
+                .nextL \
+                node_modules \
+                package*.json \
+                public \
+                next.config.* \
+                src
+
+         - name: Deploy to server via SSH
+           uses: appleboy/scp-action@master
+           with:
+              host: ${{ secrets.SERVER_HOST }}
+              username: ${{ secrets.SERVER_USER }}
+              key: ${{ secrets.SSH_PRIVATE_KEY }}
+              port: ${{ secrets.SSH_PORT || 22 }}
+              source: "deploy.tar.gz"
+              target: "/tmp/"
+
+         - name: Extract and restart application
+           uses: appleboy/ssh-action@master
+           with:
+              host: ${{ secrets.SERVER_HOST }}
+              username: ${{ secrets.SERVER_USER }}
+              key: ${{ secrets.SSH_PRIVATE_KEY }}
+              port: ${{ secrets.SSH_PORT || 22 }}
+              script: |
+                 # Load nvm so we get the correct Node version
+                 export NVM_DIR="$HOME/.nvm"
+                 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                 echo "Node version: $(node -v)"
+                 echo "Node path: $(which node)"
+
+                 # Set deployment directory
+                 DEPLOY_DIR="/var/www/emp-dash.nelles.io/app"
+
+                 # Create directory if it doesn't exist
+                 sudo mkdir -p "$DEPLOY_DIR"
+
+                 # Preserve .env.production before extracting
+                 if [ -f "$DEPLOY_DIR/.env.production" ]; then
+                   sudo cp "$DEPLOY_DIR/.env.production" /tmp/.env.production.emp-dash.bak
+                   echo "✅ Backed up .env.production"
+                 fi
+
+                 # Extract new deployment
+                 sudo tar -xzf /tmp/deploy.tar.gz -C "$DEPLOY_DIR"
+                 sudo rm /tmp/deploy.tar.gz
+
+                 # Restore .env.production
+                 if [ -f /tmp/.env.production.emp-dash.bak ]; then
+                   sudo cp /tmp/.env.production.emp-dash.bak "$DEPLOY_DIR/.env.production"
+                   sudo rm /tmp/.env.production.emp-dash.bak
+                   echo "✅ Restored .env.production"
+                 fi
+
+                 # Set proper permissions
+                 sudo chown -R $USER:$USER "$DEPLOY_DIR"
+                 sudo chmod -R 755 "$DEPLOY_DIR"
+
+                 # Check if .env.production exists, warn if missing
+                 if [ ! -f "$DEPLOY_DIR/.env.production" ]; then
+                   echo "⚠️  WARNING: .env.production not found in $DEPLOY_DIR"
+                   echo "⚠️  Application may fail to start without environment variables"
+                 fi
+
+                 # Stop existing process on port 3015
+                 echo "Stopping existing process on port 3015..."
+                 sudo lsof -ti:3015 | xargs sudo kill -9 || true
+                 sleep 2
+
+                 # Start application with PM2
+                 cd "$DEPLOY_DIR"
+                 export PORT=3015
+                 echo "Starting application with PM2 on port 3015..."
+
+                 if command -v pm2 &> /dev/null; then
+                   pm2 stop emp-dash || true
+                   pm2 delete emp-dash || true
+                   PORT=3015 pm2 start npm --name emp-dash -- start
+                   pm2 save
+                   echo "✅ PM2 started successfully"
+                   pm2 list
+                 else
+                   echo "❌ PM2 not found! Please install: sudo npm install -g pm2"
+                   exit 1
+                 fi
+
+                 echo "Deployment completed successfully!"
+                 echo "Waiting for application to start..."
+
+         - name: Verify deployment
+           uses: appleboy/ssh-action@master
+           with:
+              host: ${{ secrets.SERVER_HOST }}
+              username: ${{ secrets.SERVER_USER }}
+              key: ${{ secrets.SSH_PRIVATE_KEY }}
+              port: ${{ secrets.SSH_PORT || 22 }}
+              script: |
+                 # Load nvm so we get the correct Node version
+                 export NVM_DIR="$HOME/.nvm"
+                 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+                 echo "Waiting for application to fully start..."
+                 sleep 10
+
+                 echo "Checking if application is responding..."
+
+                 # Try to reach the application via HTTP
+                 if curl -f -s -o /dev/null http://localhost:3015; then
+                   echo "✅ Application is responding on port 3015"
+                   pm2 list
+                 else
+                   echo "⚠️  HTTP check failed, checking PM2 status..."
+                   pm2 list
+
+                   # Check if PM2 process is running
+                   if pm2 info emp-dash | grep -q "online"; then
+                     echo "✅ PM2 shows application is online"
+                     echo "Note: App may still be initializing. Check logs:"
+                     pm2 logs emp-dash --lines 10 --nostream || true
+                   else
+                     echo "❌ Application is not running properly"
+                     echo ""
+                     echo "Recent PM2 logs:"
+                     pm2 logs emp-dash --lines 30 --nostream || true
+                     echo ""
+                     echo "Checking for .env.production:"
+                     ls -la /var/www/emp-dash.nelles.io/app/.env.production || echo "❌ .env.production not found"
+                     exit 1
+                   fi
+                 fi
