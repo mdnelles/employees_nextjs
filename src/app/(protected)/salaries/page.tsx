@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import Pagination from '@/components/Pagination';
 
@@ -234,14 +234,16 @@ export default function SalariesPage() {
 
       <div className="flex justify-center">
         <Pagination
-          currentPage={currentPage}
-          totalItems={total}
-          itemsPerPage={ITEMS_PER_PAGE}
-          baseUrl="/salaries"
-          params={{
-            ...(minSalary && { min: minSalary }),
-            ...(maxSalary && { max: maxSalary }),
-            ...(selectedDept && { dept: selectedDept }),
+          page={currentPage}
+          total={total}
+          totalPages={Math.ceil(total / ITEMS_PER_PAGE)}
+          onPageChange={(p) => {
+            const params = new URLSearchParams();
+            params.set('page', p.toString());
+            if (minSalary) params.set('min', minSalary);
+            if (maxSalary) params.set('max', maxSalary);
+            if (selectedDept) params.set('dept', selectedDept);
+            window.location.search = params.toString();
           }}
         />
       </div>
