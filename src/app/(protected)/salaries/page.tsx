@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import Pagination from '@/components/Pagination';
+import { useThemeLanguage } from '@/components/ThemeLanguageProvider';
 
 interface SalaryRecord {
   id: number;
@@ -30,6 +31,7 @@ interface ApiResponse {
 const ITEMS_PER_PAGE = 50;
 
 export default function SalariesPage() {
+  const { t } = useThemeLanguage();
   const searchParams = useSearchParams();
   const [records, setRecords] = useState<SalaryRecord[]>([]);
   const [total, setTotal] = useState(0);
@@ -100,23 +102,23 @@ export default function SalariesPage() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Salaries</h1>
-        <p className="text-gray-600 mt-1">Historical salary records with filtering and pagination</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t.salaries}</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">{t.salariesSubtitle}</p>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <p className="text-sm font-medium text-blue-900">
-          Showing {records.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} to{' '}
-          {Math.min(currentPage * ITEMS_PER_PAGE, total)} of <strong>{total.toLocaleString()}</strong> records
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+        <p className="text-sm font-medium text-blue-900 dark:text-blue-300">
+          {t.showing} {records.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} to{' '}
+          {Math.min(currentPage * ITEMS_PER_PAGE, total)} of <strong>{total.toLocaleString()}</strong> {t.records}
         </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Filters</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{t.filters}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Minimum Salary
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t.minimumSalary}
             </label>
             <input
               type="number"
@@ -132,13 +134,13 @@ export default function SalariesPage() {
                 params.set('page', '1');
                 window.location.search = params.toString();
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Maximum Salary
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t.maximumSalary}
             </label>
             <input
               type="number"
@@ -154,13 +156,13 @@ export default function SalariesPage() {
                 params.set('page', '1');
                 window.location.search = params.toString();
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Department
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t.department}
             </label>
             <select
               value={selectedDept}
@@ -174,9 +176,9 @@ export default function SalariesPage() {
                 params.set('page', '1');
                 window.location.search = params.toString();
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              <option value="">All Departments</option>
+              <option value="">{t.allDepartments}</option>
               {departments.map((dept) => (
                 <option key={dept.dept_no} value={dept.dept_no}>
                   {dept.dept_name}
@@ -187,41 +189,41 @@ export default function SalariesPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-100 border-b border-gray-300">
+            <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-600">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Emp #</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Department</th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Salary</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">{t.empNo}</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">{t.name}</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">{t.title}</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">{t.department}</th>
+                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">{t.salary}</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                    Loading...
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                    {t.loading}
                   </td>
                 </tr>
               ) : records.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                    No records found
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                    {t.noRecordsFound}
                   </td>
                 </tr>
               ) : (
                 records.map((record) => (
-                  <tr key={record.id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm text-gray-900 font-medium">{record.emp_no}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                  <tr key={record.id} className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 font-medium">{record.emp_no}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                       {record.first_name} {record.last_name}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{record.title}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{record.dept_name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900 font-medium text-right">
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{record.title}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{record.dept_name}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 font-medium text-right">
                       {formatSalary(record.salary)}
                     </td>
                   </tr>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import { useThemeLanguage } from '@/components/ThemeLanguageProvider';
 import Modal from '@/components/Modal';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
@@ -49,6 +50,7 @@ const COLORS = ['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'
 
 export default function DepartmentsPage() {
   const { user } = useAuth();
+  const { t } = useThemeLanguage();
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDept, setSelectedDept] = useState<DepartmentDetail | null>(null);
@@ -156,15 +158,15 @@ export default function DepartmentsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-gray-600">Loading departments...</p>
+        <p className="text-lg text-gray-600 dark:text-gray-400">{t.loadingDepartments}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Departments</h1>
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8">{t.departments}</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {departments.map((dept) => (
@@ -173,19 +175,19 @@ export default function DepartmentsPage() {
               onClick={() => handleCardClick(dept)}
               className="card cursor-pointer hover:shadow-lg transition-shadow"
             >
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 {dept.dept_name}
               </h2>
               <div className="space-y-2">
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Employees:</span>
-                  <span className="font-semibold text-gray-900">
+                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                  <span>{t.employeesLabel}:</span>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
                     {dept.emp_count}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Avg Salary:</span>
-                  <span className="font-semibold text-gray-900">
+                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                  <span>{t.avgSalary}:</span>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
                     ${dept.avg_salary.toLocaleString()}
                   </span>
                 </div>
@@ -199,12 +201,12 @@ export default function DepartmentsPage() {
         <Modal isOpen={isModalOpen} onClose={closeModal} size="xl">
           <div className="space-y-6">
             {modalLoading ? (
-              <p className="text-gray-600">Loading department details...</p>
+              <p className="text-gray-600 dark:text-gray-400">{t.loadingDepartmentDetails}</p>
             ) : (
               <>
                 {/* Department Info */}
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                     {isEditing ? (
                       <input
                         type="text"
@@ -218,27 +220,27 @@ export default function DepartmentsPage() {
                   </h2>
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="bg-gray-100 p-3 rounded">
-                      <p className="text-xs text-gray-600">Employees</p>
-                      <p className="text-lg font-semibold text-gray-900">
+                    <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded">
+                      <p className="text-xs text-gray-600 dark:text-gray-400">{t.employeesLabel}</p>
+                      <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         {selectedDept.emp_count}
                       </p>
                     </div>
-                    <div className="bg-gray-100 p-3 rounded">
-                      <p className="text-xs text-gray-600">Avg Salary</p>
-                      <p className="text-lg font-semibold text-gray-900">
+                    <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded">
+                      <p className="text-xs text-gray-600 dark:text-gray-400">{t.avgSalary}</p>
+                      <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         ${selectedDept.avg_salary.toLocaleString()}
                       </p>
                     </div>
-                    <div className="bg-gray-100 p-3 rounded">
-                      <p className="text-xs text-gray-600">Min Salary</p>
-                      <p className="text-lg font-semibold text-gray-900">
+                    <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded">
+                      <p className="text-xs text-gray-600 dark:text-gray-400">{t.minSalary}</p>
+                      <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         ${selectedDept.min_salary.toLocaleString()}
                       </p>
                     </div>
-                    <div className="bg-gray-100 p-3 rounded">
-                      <p className="text-xs text-gray-600">Max Salary</p>
-                      <p className="text-lg font-semibold text-gray-900">
+                    <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded">
+                      <p className="text-xs text-gray-600 dark:text-gray-400">{t.maxSalary}</p>
+                      <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         ${selectedDept.max_salary.toLocaleString()}
                       </p>
                     </div>
@@ -252,13 +254,13 @@ export default function DepartmentsPage() {
                             onClick={handleEdit}
                             className="btn-primary flex-1"
                           >
-                            Save
+                            {t.save}
                           </button>
                           <button
                             onClick={() => setIsEditing(false)}
                             className="btn-secondary flex-1"
                           >
-                            Cancel
+                            {t.cancel}
                           </button>
                         </>
                       ) : (
@@ -267,13 +269,13 @@ export default function DepartmentsPage() {
                             onClick={() => setIsEditing(true)}
                             className="btn-primary flex-1"
                           >
-                            Edit
+                            {t.edit}
                           </button>
                           <button
                             onClick={() => setIsDeleting(true)}
                             className="btn-danger flex-1"
                           >
-                            Delete
+                            {t.delete}
                           </button>
                         </>
                       )}
@@ -283,23 +285,22 @@ export default function DepartmentsPage() {
 
                 {/* Delete Confirmation */}
                 {isDeleting && (
-                  <div className="bg-red-50 border border-red-200 rounded p-4">
-                    <p className="text-red-900 mb-4">
-                      Are you sure you want to delete this department? This
-                      action cannot be undone.
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded p-4">
+                    <p className="text-red-900 dark:text-red-300 mb-4">
+                      {t.deleteConfirmDept}
                     </p>
                     <div className="flex gap-2">
                       <button
                         onClick={handleDelete}
                         className="btn-danger flex-1"
                       >
-                        Confirm Delete
+                        {t.confirmDelete}
                       </button>
                       <button
                         onClick={() => setIsDeleting(false)}
                         className="btn-secondary flex-1"
                       >
-                        Cancel
+                        {t.cancel}
                       </button>
                     </div>
                   </div>
@@ -307,26 +308,26 @@ export default function DepartmentsPage() {
 
                 {/* Managers */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    Managers
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                    {t.managers}
                   </h3>
                   <div className="space-y-2">
                     {selectedDept.managers.length > 0 ? (
                       selectedDept.managers.map((mgr) => (
                         <div
                           key={mgr.emp_no}
-                          className="bg-gray-50 p-3 rounded border border-gray-200"
+                          className="bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600"
                         >
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-gray-900 dark:text-gray-100">
                             {mgr.first_name} {mgr.last_name}
                           </p>
-                          <p className="text-xs text-gray-600">
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
                             {mgr.from_date} to {mgr.to_date}
                           </p>
                         </div>
                       ))
                     ) : (
-                      <p className="text-gray-600">No managers</p>
+                      <p className="text-gray-600 dark:text-gray-400">{t.noManagers}</p>
                     )}
                   </div>
                 </div>
@@ -334,8 +335,8 @@ export default function DepartmentsPage() {
                 {/* Title Distribution */}
                 {selectedDept.title_distribution.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                      Title Distribution
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                      {t.titleDistribution}
                     </h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
@@ -368,8 +369,8 @@ export default function DepartmentsPage() {
                 {/* Gender Distribution */}
                 {selectedDept.gender_distribution.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                      Gender Distribution
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                      {t.genderDistribution}
                     </h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
@@ -401,24 +402,24 @@ export default function DepartmentsPage() {
 
                 {/* Employees Table */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    Employees (showing first 200)
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                    {t.employeesShowing}
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="table-header text-left">Name</th>
-                          <th className="table-header text-left">Salary</th>
-                          <th className="table-header text-left">From Date</th>
-                          <th className="table-header text-left">To Date</th>
+                        <tr className="border-b border-gray-200 dark:border-gray-600">
+                          <th className="table-header text-left">{t.name}</th>
+                          <th className="table-header text-left">{t.salary}</th>
+                          <th className="table-header text-left">{t.fromDate}</th>
+                          <th className="table-header text-left">{t.toDate}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {selectedDept.employees.slice(0, 200).map((emp) => (
                           <tr
                             key={emp.emp_no}
-                            className="border-b border-gray-200"
+                            className="border-b border-gray-200 dark:border-gray-600"
                           >
                             <td className="table-cell">
                               {emp.first_name} {emp.last_name}

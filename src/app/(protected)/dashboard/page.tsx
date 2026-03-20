@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { api } from '@/lib/api-client'
+import { useThemeLanguage } from '@/components/ThemeLanguageProvider'
 import {
   BarChart,
   Bar,
@@ -57,6 +58,7 @@ interface AnalyticsData {
 }
 
 export default function DashboardPage() {
+  const { t } = useThemeLanguage()
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -70,7 +72,7 @@ export default function DashboardPage() {
         setError(null)
       } catch (err) {
         console.error('Failed to fetch analytics:', err)
-        setError('Failed to load analytics data')
+        setError(t.failedToLoadAnalytics)
       } finally {
         setLoading(false)
       }
@@ -84,7 +86,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading analytics...</p>
+          <p className="text-gray-600 dark:text-gray-400">{t.loadingAnalytics}</p>
         </div>
       </div>
     )
@@ -92,8 +94,8 @@ export default function DashboardPage() {
 
   if (error || !data) {
     return (
-      <div className="text-center text-gray-500 py-12">
-        <p className="text-lg">{error || 'Failed to load analytics'}</p>
+      <div className="text-center text-gray-500 dark:text-gray-400 py-12">
+        <p className="text-lg">{error || t.failedToLoadAnalytics}</p>
       </div>
     )
   }
@@ -121,22 +123,22 @@ export default function DashboardPage() {
   })
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">Analytics Dashboard</h1>
-          <p className="text-gray-600 mt-2">Employee analytics and insights</p>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">{t.analyticsDashboard}</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">{t.analyticsSubtitle}</p>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Total Employees Card */}
-          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-blue-500">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">Total Employees</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">
+                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">{t.totalEmployees}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">
                   {data.summary.totalEmployees.toLocaleString()}
                 </p>
               </div>
@@ -145,11 +147,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Total Departments Card */}
-          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-purple-500">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">Total Departments</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">
+                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">{t.totalDepartments}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">
                   {data.summary.totalDepartments}
                 </p>
               </div>
@@ -158,11 +160,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Average Salary Card */}
-          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-green-500">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">Average Salary</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">
+                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">{t.averageSalary}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">
                   {fmt(data.summary.avgSalary)}
                 </p>
               </div>
@@ -174,8 +176,8 @@ export default function DashboardPage() {
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Department Salary Comparison */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Department Salary Comparison</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t.deptSalaryComparison}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.deptSalaries}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -200,8 +202,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Gender Distribution */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Gender Distribution</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t.genderDistribution}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -225,8 +227,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Hiring Trend Over Years */}
-          <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Hiring Trend</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t.hiringTrend}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={data.hiringTrend}>
                 <defs>
@@ -245,8 +247,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Title Distribution */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Title Distribution</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t.titleDistribution}</h2>
             <ResponsiveContainer width="100%" height={350}>
               <BarChart
                 data={data.titleDistribution}
@@ -263,8 +265,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Salary Range Distribution */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Salary Range Distribution</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t.salaryRangeDistribution}</h2>
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={data.salaryRanges} margin={{ bottom: 50 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -283,8 +285,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Tenure Distribution */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Tenure Distribution</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t.tenureDistribution}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.tenureDistribution}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -303,8 +305,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Department Size */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Department Size</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t.departmentSize}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.deptSalaries}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -323,8 +325,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Age Distribution */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Age Distribution</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t.ageDistribution}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.ageDistribution}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -343,8 +345,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Salary by Title */}
-          <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Salary by Title (Min/Avg/Max)</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t.salaryByTitle}</h2>
             <ResponsiveContainer width="100%" height={350}>
               <BarChart
                 data={data.salaryByTitle}
@@ -375,8 +377,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Gender by Department (Stacked) */}
-          <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Gender Distribution by Department</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t.genderByDepartment}</h2>
             <ResponsiveContainer width="100%" height={350}>
               <BarChart
                 data={deptGenderData}

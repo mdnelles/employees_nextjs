@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
+import { useThemeLanguage } from '@/components/ThemeLanguageProvider';
 import {
   BarChart,
   Bar,
@@ -38,6 +39,7 @@ const COLORS = [
 ];
 
 export default function TitlesPage() {
+  const { t } = useThemeLanguage();
   const [titles, setTitles] = useState<TitleData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -81,19 +83,19 @@ export default function TitlesPage() {
   return (
     <div className="space-y-8 p-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Titles</h1>
-        <p className="text-gray-600 mt-1">Job titles with employee counts and salary analysis</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t.titles}</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">{t.titlesSubtitle}</p>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center h-96">
-          <p className="text-gray-500 text-lg">Loading...</p>
+          <p className="text-gray-500 dark:text-gray-400 text-lg">{t.loading}</p>
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Employee Count by Title</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{t.employeeCountByTitle}</h2>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={countChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -111,8 +113,8 @@ export default function TitlesPage() {
               </ResponsiveContainer>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Salary Range by Title</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{t.salaryRangeByTitle}</h2>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={salaryChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -143,51 +145,51 @@ export default function TitlesPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-100 border-b border-gray-300">
+                <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-600">
                   <tr>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                      Title
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      {t.title}
                     </th>
-                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
-                      Current Employees
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      {t.currentEmployees}
                     </th>
-                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
-                      Avg Salary
+                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      {t.avgSalary}
                     </th>
-                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
-                      Min Salary
+                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      {t.minSalary}
                     </th>
-                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">
-                      Max Salary
+                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      {t.maxSalary}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {titles.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                        No titles found
+                      <td colSpan={5} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                        {t.noTitlesFound}
                       </td>
                     </tr>
                   ) : (
                     titles.map((title, idx) => (
-                      <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50">
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      <tr key={idx} className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
                           {title.title}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 text-center font-medium">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 text-center font-medium">
                           {title.current_count.toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 text-right">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 text-right">
                           {formatSalary(title.avg_salary)}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 text-right">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 text-right">
                           {formatSalary(title.min_salary)}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 text-right">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 text-right">
                           {formatSalary(title.max_salary)}
                         </td>
                       </tr>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { api } from '@/lib/api-client'
 import { useAuth } from '@/components/AuthProvider'
+import { useThemeLanguage } from '@/components/ThemeLanguageProvider'
 import Modal from '@/components/Modal'
 import Pagination from '@/components/Pagination'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -17,6 +18,7 @@ interface EmployeeDetail {
 
 export default function EmployeesPage() {
   const { sessionEdits, deleteEmployee, editEmployee } = useAuth()
+  const { t } = useThemeLanguage()
   const [employees, setEmployees] = useState<EmployeeWithDetails[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
   const [page, setPage] = useState(1)
@@ -160,37 +162,37 @@ export default function EmployeesPage() {
   return (
     <div className="space-y-4 p-6">
       <div>
-        <h1 className="text-2xl font-bold text-surface-900">Employees</h1>
-        <p className="text-surface-500 mt-1">Manage employee records and view details</p>
+        <h1 className="text-2xl font-bold text-surface-900 dark:text-gray-100">{t.employees}</h1>
+        <p className="text-surface-500 dark:text-gray-400 mt-1">{t.employeesSubtitle}</p>
       </div>
 
       <div className="card space-y-4">
         <div className="flex gap-4 flex-wrap">
           <div className="flex-1 min-w-64">
-            <label className="block text-sm font-medium text-surface-700 mb-1">Search</label>
+            <label className="block text-sm font-medium text-surface-700 dark:text-gray-300 mb-1">{t.search}</label>
             <input
               type="text"
-              placeholder="Search by name or emp #..."
+              placeholder={t.searchPlaceholder}
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value)
                 setPage(1)
               }}
-              className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-surface-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
           <div className="flex-1 min-w-64">
-            <label className="block text-sm font-medium text-surface-700 mb-1">Department</label>
+            <label className="block text-sm font-medium text-surface-700 dark:text-gray-300 mb-1">{t.department}</label>
             <select
               value={selectedDept}
               onChange={(e) => {
                 setSelectedDept(e.target.value)
                 setPage(1)
               }}
-              className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-surface-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              <option value="">All Departments</option>
+              <option value="">{t.allDepartments}</option>
               {departments.map(dept => (
                 <option key={dept.dept_no} value={dept.dept_no}>
                   {dept.dept_name}
@@ -205,36 +207,36 @@ export default function EmployeesPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-surface-50 border-b border-surface-200">
-                <th className="px-4 py-3 text-left font-semibold text-surface-900 w-12"></th>
-                <th className="px-4 py-3 text-left font-semibold text-surface-900">Emp #</th>
-                <th className="px-4 py-3 text-left font-semibold text-surface-900">Name</th>
-                <th className="px-4 py-3 text-left font-semibold text-surface-900">Gender</th>
-                <th className="px-4 py-3 text-left font-semibold text-surface-900">Hire Date</th>
-                <th className="px-4 py-3 text-left font-semibold text-surface-900">Department</th>
-                <th className="px-4 py-3 text-left font-semibold text-surface-900">Title</th>
-                <th className="px-4 py-3 text-left font-semibold text-surface-900">Salary</th>
-                <th className="px-4 py-3 text-center font-semibold text-surface-900">Actions</th>
+              <tr className="bg-surface-50 dark:bg-gray-700 border-b border-surface-200 dark:border-gray-700">
+                <th className="px-4 py-3 text-left font-semibold text-surface-900 dark:text-gray-100 w-12"></th>
+                <th className="px-4 py-3 text-left font-semibold text-surface-900 dark:text-gray-100">{t.empNo}</th>
+                <th className="px-4 py-3 text-left font-semibold text-surface-900 dark:text-gray-100">{t.name}</th>
+                <th className="px-4 py-3 text-left font-semibold text-surface-900 dark:text-gray-100">{t.gender}</th>
+                <th className="px-4 py-3 text-left font-semibold text-surface-900 dark:text-gray-100">{t.hireDate}</th>
+                <th className="px-4 py-3 text-left font-semibold text-surface-900 dark:text-gray-100">{t.department}</th>
+                <th className="px-4 py-3 text-left font-semibold text-surface-900 dark:text-gray-100">{t.title}</th>
+                <th className="px-4 py-3 text-left font-semibold text-surface-900 dark:text-gray-100">{t.salary}</th>
+                <th className="px-4 py-3 text-center font-semibold text-surface-900 dark:text-gray-100">{t.actions}</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-surface-500">
-                    Loading employees...
+                  <td colSpan={9} className="px-4 py-8 text-center text-surface-500 dark:text-gray-400">
+                    {t.loadingEmployees}
                   </td>
                 </tr>
               ) : visibleEmployees.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-surface-500">
-                    No employees found
+                  <td colSpan={9} className="px-4 py-8 text-center text-surface-500 dark:text-gray-400">
+                    {t.noEmployeesFound}
                   </td>
                 </tr>
               ) : (
                 visibleEmployees.map(employee => (
                   <React.Fragment key={employee.emp_no}>
                     <tr
-                      className={`border-b border-surface-100 hover:bg-surface-50 cursor-pointer transition-colors ${
+                      className={`border-b border-surface-100 dark:border-gray-700 hover:bg-surface-50 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
                         sessionEdits.deletedEmployees.includes(employee.emp_no)
                           ? 'opacity-50 line-through'
                           : ''
@@ -248,29 +250,29 @@ export default function EmployeesPage() {
                           {expandedId === employee.emp_no ? '−' : '+'}
                         </button>
                       </td>
-                      <td className="px-4 py-3 font-mono font-semibold text-surface-900">
+                      <td className="px-4 py-3 font-mono font-semibold text-surface-900 dark:text-gray-100">
                         {employee.emp_no}
                       </td>
                       <td
-                        className={`px-4 py-3 font-medium text-surface-900 ${getHighlightClass(
+                        className={`px-4 py-3 font-medium text-surface-900 dark:text-gray-100 ${getHighlightClass(
                           employee.emp_no,
                           'first_name'
                         )} ${getHighlightClass(employee.emp_no, 'last_name')}`}
                       >
                         {employee.first_name} {employee.last_name}
                       </td>
-                      <td className="px-4 py-3 text-surface-600">{employee.gender}</td>
+                      <td className="px-4 py-3 text-surface-600 dark:text-gray-400">{employee.gender}</td>
                       <td
-                        className={`px-4 py-3 text-surface-600 ${getHighlightClass(
+                        className={`px-4 py-3 text-surface-600 dark:text-gray-400 ${getHighlightClass(
                           employee.emp_no,
                           'hire_date'
                         )}`}
                       >
                         {formatDate(employee.hire_date)}
                       </td>
-                      <td className="px-4 py-3 text-surface-600">{employee.dept_name || '-'}</td>
-                      <td className="px-4 py-3 text-surface-600">{employee.title || '-'}</td>
-                      <td className="px-4 py-3 font-mono text-surface-900">
+                      <td className="px-4 py-3 text-surface-600 dark:text-gray-400">{employee.dept_name || '-'}</td>
+                      <td className="px-4 py-3 text-surface-600 dark:text-gray-400">{employee.title || '-'}</td>
+                      <td className="px-4 py-3 font-mono text-surface-900 dark:text-gray-100">
                         {formatSalary(employee.salary)}
                       </td>
                       <td className="px-4 py-3">
@@ -279,60 +281,60 @@ export default function EmployeesPage() {
                             onClick={() => handleEditClick(employee)}
                             className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                           >
-                            Edit
+                            {t.edit}
                           </button>
                           <button
                             onClick={() => handleDeleteClick(employee.emp_no)}
                             className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
                           >
-                            Delete
+                            {t.delete}
                           </button>
                         </div>
                       </td>
                     </tr>
 
                     {expandedId === employee.emp_no && expandedDetails && (
-                      <tr className="bg-surface-50 border-b border-surface-200">
+                      <tr className="bg-surface-50 dark:bg-gray-700 border-b border-surface-200 dark:border-gray-700">
                         <td colSpan={9} className="px-4 py-4">
                           <div className="space-y-6">
                             <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
                               <div>
-                                <label className="text-xs font-semibold text-surface-600 uppercase">
-                                  Birth Date
+                                <label className="text-xs font-semibold text-surface-600 dark:text-gray-400 uppercase">
+                                  {t.birthDate}
                                 </label>
-                                <p className="text-surface-900 font-medium mt-1">
+                                <p className="text-surface-900 dark:text-gray-100 font-medium mt-1">
                                   {formatDate(expandedDetails.employee.birth_date)}
                                 </p>
                               </div>
                               <div>
-                                <label className="text-xs font-semibold text-surface-600 uppercase">
-                                  Age
+                                <label className="text-xs font-semibold text-surface-600 dark:text-gray-400 uppercase">
+                                  {t.age}
                                 </label>
-                                <p className="text-surface-900 font-medium mt-1">
+                                <p className="text-surface-900 dark:text-gray-100 font-medium mt-1">
                                   {Math.floor(
                                     (Date.now() - new Date(expandedDetails.employee.birth_date).getTime()) /
                                       (365.25 * 24 * 60 * 60 * 1000)
                                   )}{' '}
-                                  years
+                                  {t.years}
                                 </p>
                               </div>
                               <div>
-                                <label className="text-xs font-semibold text-surface-600 uppercase">
-                                  Tenure
+                                <label className="text-xs font-semibold text-surface-600 dark:text-gray-400 uppercase">
+                                  {t.tenure}
                                 </label>
-                                <p className="text-surface-900 font-medium mt-1">
+                                <p className="text-surface-900 dark:text-gray-100 font-medium mt-1">
                                   {Math.floor(
                                     (Date.now() - new Date(expandedDetails.employee.hire_date).getTime()) /
                                       (365.25 * 24 * 60 * 60 * 1000)
                                   )}{' '}
-                                  years
+                                  {t.years}
                                 </p>
                               </div>
                               <div>
-                                <label className="text-xs font-semibold text-surface-600 uppercase">
-                                  Current Salary
+                                <label className="text-xs font-semibold text-surface-600 dark:text-gray-400 uppercase">
+                                  {t.currentSalary}
                                 </label>
-                                <p className="text-surface-900 font-medium mt-1">
+                                <p className="text-surface-900 dark:text-gray-100 font-medium mt-1">
                                   {expandedDetails.salaries.length > 0
                                     ? formatSalary(expandedDetails.salaries[0].salary)
                                     : '-'}
@@ -342,8 +344,8 @@ export default function EmployeesPage() {
 
                             {expandedDetails.salaries.length > 1 && (
                               <div>
-                                <h4 className="font-semibold text-surface-900 mb-3">
-                                  Salary History
+                                <h4 className="font-semibold text-surface-900 dark:text-gray-100 mb-3">
+                                  {t.salaryHistory}
                                 </h4>
                                 <ResponsiveContainer width="100%" height={250}>
                                   <LineChart
@@ -376,8 +378,8 @@ export default function EmployeesPage() {
 
                             {expandedDetails.titles.length > 0 && (
                               <div>
-                                <h4 className="font-semibold text-surface-900 mb-4">
-                                  Title History
+                                <h4 className="font-semibold text-surface-900 dark:text-gray-100 mb-4">
+                                  {t.titleHistory}
                                 </h4>
                                 <div className="space-y-3">
                                   {expandedDetails.titles.map((title: Title, idx: number) => (
@@ -389,11 +391,11 @@ export default function EmployeesPage() {
                                         )}
                                       </div>
                                       <div className="pt-0.5">
-                                        <p className="font-semibold text-surface-900">{title.title}</p>
-                                        <p className="text-xs text-surface-500">
+                                        <p className="font-semibold text-surface-900 dark:text-gray-100">{title.title}</p>
+                                        <p className="text-xs text-surface-500 dark:text-gray-400">
                                           {formatDate(title.from_date)} to{' '}
                                           {title.to_date === '9999-01-01'
-                                            ? 'Present'
+                                            ? t.present
                                             : formatDate(title.to_date)}
                                         </p>
                                       </div>
@@ -405,8 +407,8 @@ export default function EmployeesPage() {
 
                             {expandedDetails.departments.length > 0 && (
                               <div>
-                                <h4 className="font-semibold text-surface-900 mb-4">
-                                  Department History
+                                <h4 className="font-semibold text-surface-900 dark:text-gray-100 mb-4">
+                                  {t.departmentHistory}
                                 </h4>
                                 <div className="space-y-3">
                                   {expandedDetails.departments.map((dept: any, idx: number) => (
@@ -418,13 +420,13 @@ export default function EmployeesPage() {
                                         )}
                                       </div>
                                       <div className="pt-0.5">
-                                        <p className="font-semibold text-surface-900">
+                                        <p className="font-semibold text-surface-900 dark:text-gray-100">
                                           {dept.dept_name}
                                         </p>
-                                        <p className="text-xs text-surface-500">
+                                        <p className="text-xs text-surface-500 dark:text-gray-400">
                                           {formatDate(dept.from_date)} to{' '}
                                           {dept.to_date === '9999-01-01'
-                                            ? 'Present'
+                                            ? t.present
                                             : formatDate(dept.to_date)}
                                         </p>
                                       </div>
@@ -459,14 +461,14 @@ export default function EmployeesPage() {
           setEditingId(null)
           setEditFormData({})
         }}
-        title="Edit Employee"
+        title={t.editEmployee}
         size="lg"
       >
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">
-                First Name
+              <label className="block text-sm font-medium text-surface-700 dark:text-gray-300 mb-1">
+                {t.firstName}
               </label>
               <input
                 type="text"
@@ -474,12 +476,12 @@ export default function EmployeesPage() {
                 onChange={(e) =>
                   setEditFormData({ ...editFormData, first_name: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-surface-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">
-                Last Name
+              <label className="block text-sm font-medium text-surface-700 dark:text-gray-300 mb-1">
+                {t.lastName}
               </label>
               <input
                 type="text"
@@ -487,15 +489,15 @@ export default function EmployeesPage() {
                 onChange={(e) =>
                   setEditFormData({ ...editFormData, last_name: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-surface-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">
-                Birth Date
+              <label className="block text-sm font-medium text-surface-700 dark:text-gray-300 mb-1">
+                {t.birthDate}
               </label>
               <input
                 type="date"
@@ -503,30 +505,30 @@ export default function EmployeesPage() {
                 onChange={(e) =>
                   setEditFormData({ ...editFormData, birth_date: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-surface-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">
-                Gender
+              <label className="block text-sm font-medium text-surface-700 dark:text-gray-300 mb-1">
+                {t.gender}
               </label>
               <select
                 value={editFormData.gender || ''}
                 onChange={(e) =>
                   setEditFormData({ ...editFormData, gender: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-surface-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
-                <option value="">Select Gender</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
+                <option value="">{t.selectGender}</option>
+                <option value="M">{t.male}</option>
+                <option value="F">{t.female}</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-surface-700 mb-1">
-              Hire Date
+            <label className="block text-sm font-medium text-surface-700 dark:text-gray-300 mb-1">
+              {t.hireDate}
             </label>
             <input
               type="date"
@@ -534,11 +536,11 @@ export default function EmployeesPage() {
               onChange={(e) =>
                 setEditFormData({ ...editFormData, hire_date: e.target.value })
               }
-              className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-surface-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-surface-200">
+          <div className="flex justify-end gap-3 pt-4 border-t border-surface-200 dark:border-gray-700">
             <button
               onClick={() => {
                 setIsEditModalOpen(false)
@@ -547,15 +549,15 @@ export default function EmployeesPage() {
               }}
               className="btn-secondary"
             >
-              Cancel
+              {t.cancel}
             </button>
             <button
               onClick={handleSaveEdit}
               className="btn-primary flex items-center gap-2"
             >
-              Save
+              {t.save}
               <span className="inline-block px-2 py-0.5 text-xs font-semibold rounded bg-amber-200 text-amber-800">
-                Session Only
+                {t.sessionOnly}
               </span>
             </button>
           </div>
