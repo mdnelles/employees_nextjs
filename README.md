@@ -2,7 +2,7 @@
 
 A full-featured employee management dashboard built with Next.js 14, featuring interactive analytics, comprehensive data views, and a demo-safe architecture that prevents any modifications to the underlying data store.
 
-**Live Demo:** [https://emp-dash.nelles.io/login](https://emp-dash.nelles.io/login)
+**Live Demo:** [https://employees.mikenelles.com/login](https://employees.mikenelles.com/login)
 
 ![Analytics Dashboard](/public/readme/read2.png)
 
@@ -169,7 +169,7 @@ The project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) 
 1. Checks out code and installs dependencies
 2. Builds the Next.js production bundle
 3. Creates a deployment archive with the build output, node_modules, and source files
-4. Deploys via SSH to `/var/www/emp-dash.nelles.io/app`
+4. Deploys via SSH to `/var/www/employees.mikenelles.com/app`
 5. Preserves the server's `.env.production` across deployments
 6. Restarts the PM2 process on port 3015
 7. Verifies the deployment is responding

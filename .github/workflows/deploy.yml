@@ -76,7 +76,7 @@ jobs:
                  echo "Node path: $(which node)"
 
                  # Set deployment directory
-                 DEPLOY_DIR="/var/www/emp-dash.nelles.io/app"
+                 DEPLOY_DIR="/var/www/employees.mikenelles.com/app"
 
                  # Create directory if it doesn't exist
                  sudo mkdir -p "$DEPLOY_DIR"
@@ -170,7 +170,7 @@ jobs:
                      pm2 logs emp-dash --lines 30 --nostream || true
                      echo ""
                      echo "Checking for .env.production:"
-                     ls -la /var/www/emp-dash.nelles.io/app/.env.production || echo "❌ .env.production not found"
+                     ls -la /var/www/employees.mikenelles.com/app/.env.production || echo "❌ .env.production not found"
                      exit 1
                    fi
                  fi
@@ -222,20 +222,20 @@ jobs:
                    echo "⚠️  Application may fail to start without environment variables"
                  fi
 
-                 # Stop existing process on port 3015
-                 echo "Stopping existing process on port 3015..."
-                 sudo lsof -ti:3015 | xargs sudo kill -9 || true
+                 # Stop existing process on port 3016
+                 echo "Stopping existing process on port 3016..."
+                 sudo lsof -ti:3016 | xargs sudo kill -9 || true
                  sleep 2
 
                  # Start application with PM2
                  cd "$DEPLOY_DIR"
-                 export PORT=3015
-                 echo "Starting application with PM2 on port 3015..."
+                 export PORT=3016
+                 echo "Starting application with PM2 on port 3016..."
 
                  if command -v pm2 &> /dev/null; then
                    pm2 stop employees-app || true
                    pm2 delete employees-app || true
-                   PORT=3015 pm2 start npm --name employees-app -- start
+                   PORT=3016 pm2 start npm --name employees-app -- start
                    pm2 save
                    echo "✅ PM2 started successfully"
                    pm2 list
@@ -265,8 +265,8 @@ jobs:
                  echo "Checking if application is responding..."
 
                  # Try to reach the application via HTTP
-                 if curl -f -s -o /dev/null http://localhost:3015; then
-                   echo "✅ Application is responding on port 3015"
+                 if curl -f -s -o /dev/null http://localhost:3016; then
+                   echo "✅ Application is responding on port 3016"
                    pm2 list
                  else
                    echo "⚠️  HTTP check failed, checking PM2 status..."
